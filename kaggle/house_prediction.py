@@ -1,12 +1,11 @@
-import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error
 
 # Read data
-X_full = pd.read_csv('train.csv', index_col='Id')
-X_test_full = pd.read_csv('test.csv', index_col='Id')
+X_full = pd.read_csv('kaggle/train.csv', index_col='Id')
+X_test_full = pd.read_csv('kaggle/test.csv', index_col='Id')
 
 # Obtain target and predictors
 y = X_full.SalePrice
@@ -40,4 +39,4 @@ my_model = model_3
 my_model.fit(X, y)
 preds = my_model.predict(X_test)
 output = pd.DataFrame({'Id' : X_test.index, 'SalePrice' : preds})
-output.to_csv('submission.csv', index=False)
+output.to_csv('kaggle/submission.csv', index=False)
