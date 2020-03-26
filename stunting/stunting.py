@@ -10,31 +10,72 @@ X = X_full
 ############## 
 # Preliminary investigation
 ##############
+X_copy = X.copy()
 
-# Shape of data (num_rows, num_columns)
-print(X.shape)
+# Get list of non-numerical variables
+s = (X_copy.dtypes == 'object')
+object_cols = list(s[s].index)
+# print(object_cols)
 
-# Number of missing values in each column of training data
-missing_val_count_by_column = (X == ' ').sum()
-print(missing_val_count_by_column[missing_val_count_by_column > 0])
+#############################
+# Preprocessing             #
+#############################
 
-############## 
-# Make ordinal number all
-##############
+# 1. Mengganti spasi dengan null
+# X_copy = X_copy[object_cols].replace(' ', '')
 
-##############
-# Kmeans Clustering
-##############
-import numpy as np
+# 2. Mengganti spasi dengan 0
+X_copy = X_copy.replace(' ', 0)
+
+# 3. pakai average
+
+# Drop columns with string values
+cols_with_string = ['h519esp', 'h521esp', 'h522esp', 'h70506sp', 'h812esp', 'code_upm']
+X_copy.drop(cols_with_string, axis=1, inplace=True)
+
+#############################
+# Rubah Ordinal semuanya    #
+#############################
+
+# Check cardinality
+from pandas import *
+
+data = pd.read_csv('stunting/data_coba.csv', delimiter=';')
+data = data[0:3]
+idx = []
+
+for i in range(147):
+    idx.append(i)
+    # print(i)
+
+idx = Int64Index(idx)
+data = data.transpose()
+data.set_index(idx, inplace=True)
+col_cardinal = []
+
+for i in range(147):
+    if(data[2][i] == 'kardinal'):
+        col_cardinal.append(data[0][i])
+
+print(col_cardinal)
+# bad_label_cols = list(set(object_cols)-set(good_label_cols))
+col_ordinal = list(set(X_copy.columns)-set(col_cardinal))
+print(col_ordinal)
+
+#############################
+# K-means Clustering        #
+#############################
 from sklearn.cluster import KMeans
+import numpy as np
+
 def clustering():
-    X = np.asarray(X_full.astype(float))
+    X_np_array = np.asarray(X_copy.astype(float))
     kmeans = KMeans(n_clusters=2)
-    kmeans.fit(X)
+    kmeans.fit(X_np_array)
     stunting=[]
     notstunting=[]
-    for i in range(len(X)):
-        predict_me = np.array(X[i].astype(float))
+    for i in range(len(X_np_array)):
+        predict_me = np.array(X_np_array[i].astype(float))
         predict_me = predict_me.reshape(-1, len(predict_me))
         prediction = kmeans.predict(predict_me)
         if prediction == [0]:
@@ -42,7 +83,8 @@ def clustering():
             # print("row"+str(i)+" : "+str(prediction))
         else:
             stunting.append(i)
-    print(len(stunting))
-    print(len(notstunting))
 
-clustering()
+    print('stunting: %d' % len(stunting))
+    print('not stunting: %d' % len(notstunting))
+
+# clustering()
