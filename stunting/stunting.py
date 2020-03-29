@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 # Read the data
 X_full = pd.read_csv('stunting/data_Hogar_hogar.csv', encoding = 'ISO-8859-1')
@@ -33,34 +34,23 @@ X_copy = X_copy.replace(' ', 0)
 cols_with_string = ['h519esp', 'h521esp', 'h522esp', 'h70506sp', 'h812esp', 'code_upm']
 X_copy.drop(cols_with_string, axis=1, inplace=True)
 
-#############################
-# Rubah Ordinal semuanya    #
-#############################
+col_cardinal = [
+    'h70101','h70102', 'h70103', 'h70104', 'h70105', 'h70106', 'h70107', 'h70108', 'h70109', 'h70110', 'h70111', 'h70112', 'h70113', 'h70114', 'h70115', 'h70116', 'h70117', 'h70201', 'h70202', 'h70203', 'h70204', 'h70205', 'h70206', 'h70207', 'h70301', 'h70302', 'h70303', 'h70304', 'h70305', 'h70306', 'h70307', 'h70308', 'h70309', 'h70310', 'h70311', 'h70401', 'h70402', 'h70403', 'h70404', 'h70405', 'h70406', 'h70501a', 'h70502a', 'h70503a', 'h70504a', 'h70505a', 'h70506a', 'h706', 'h707'
+]
+X_copy = X_copy.astype(float)
 
-# Check cardinality
-from pandas import *
-
-data = pd.read_csv('stunting/data_coba.csv', delimiter=';')
-data = data[0:3]
-idx = []
-
-for i in range(147):
-    idx.append(i)
-    # print(i)
-
-idx = Int64Index(idx)
-data = data.transpose()
-data.set_index(idx, inplace=True)
-col_cardinal = []
-
-for i in range(147):
-    if(data[2][i] == 'kardinal'):
-        col_cardinal.append(data[0][i])
-
-print(col_cardinal)
-# bad_label_cols = list(set(object_cols)-set(good_label_cols))
-col_ordinal = list(set(X_copy.columns)-set(col_cardinal))
-print(col_ordinal)
+for cardinal in col_cardinal:
+    print(cardinal)
+    print(X_copy[cardinal].head(20).values)
+    c = pd.cut(
+        X_copy[cardinal],
+        bins=[-np.inf, 0, 200, 400, 600, 800, np.inf],
+        labels=[0,1,2,3,4,5]
+    )
+    # print(c.head(20).values)
+    X_copy.drop(labels=cardinal, axis=1, inplace=True)
+    X_copy[cardinal] = c.values
+    print(X_copy[cardinal].head(20).values)
 
 #############################
 # K-means Clustering        #
@@ -87,4 +77,4 @@ def clustering():
     print('stunting: %d' % len(stunting))
     print('not stunting: %d' % len(notstunting))
 
-# clustering()
+clustering()

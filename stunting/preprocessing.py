@@ -18,4 +18,6 @@ for i in range(147):
     if(data[2][i] == 'kardinal'):
         col_with_cardinal.append(data[0][i])
 
+print('\n\n')
 print(col_with_cardinal)
+# print(set(col_with_cardinal))
