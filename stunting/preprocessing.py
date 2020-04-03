@@ -2,7 +2,8 @@ import pandas as pd
 import numpy as np
 
 # Read the data
-X_full = pd.read_csv('stunting/data_Hogar_hogar.csv', encoding = 'ISO-8859-1', low_memory=False)
+# X_full = pd.read_csv('stunting/data.csv', encoding = 'ISO-8859-1', low_memory=False, na_values=[np.nan, 'NONE', 9999, 9999, ' '])
+X_full = pd.read_csv('stunting/data.csv', encoding = 'ISO-8859-1', low_memory=False)
 
 # To keep things simple, we'll use only numerical predictors
 # X = X_full.select_dtypes(exclude=['object'])
@@ -52,7 +53,7 @@ col_not_cardinal = list(set(X_copy.columns)-set(col_cardinal)-set(col_cardinal_s
 
 # 3. pakai average
 
-for column in X_copy.columns:
+for column in col_cardinal:
     try:
         X_copy_copy = X_copy[column]
         X_copy_copy = X_copy_copy.replace(' ', 0)
@@ -66,10 +67,26 @@ for column in X_copy.columns:
         # print(e)
         break
 
+for column in col_cardinal_small:
+    try:
+        X_copy_copy = X_copy[column]
+        X_copy_copy = X_copy_copy.replace(' ', 0)
+        X_copy_copy = X_copy_copy.astype(int)
+        average = round(X_copy_copy.mean(),0)
+        X_copy[column] = X_copy[column].replace(' ', average) 
+        X_copy[column] = X_copy[column].astype(int)
+    except Exception as e:
+        print(column)
+        print(X_copy[column].head(20))
+        # print(e)
+        break
+
+
 # print(X_copy['h807'].head(20))
 # X_copy['h807'] = X_copy['h807'].replace(' ', X_copy['h807'].mode())
 # print(X_copy['h807'].head(20))
 
+# ordinal with average
 # for column in col_not_cardinal:
 #     try:
 #         X_copy_copy = X_copy[column]
@@ -85,14 +102,36 @@ for column in X_copy.columns:
 #         # print(e)
 #         break
 
+# ordinal with median
+
+for column in col_not_cardinal:
+    try:
+        # print(X_copy[column].dtypes)
+        X_copy_copy = X_copy[column]
+        X_copy_copy
+        X_copy_copy = X_copy_copy.replace(' ', 0)
+        # X_copy_copy.dropna()
+        median = X_copy_copy.median()
+        # print(median)
+        # median = X_copy[column].median()
+        # print(column + ' => ' + median)
+        X_copy[column] = X_copy[column].replace(' ', median) 
+        X_copy[column] = X_copy[column].astype(int)
+    except Exception as e:
+        print('GAGAL')
+        print(column)
+#         # print(X_copy[column].head(20))
+        print(e)
+        break
+
 for cardinal in col_cardinal:
     # print(X_copy[cardinal].head(20))
     # print(X_copy[cardinal].describe())
     # print('\n')
     c = pd.cut(
         X_copy[cardinal],
-        bins=[-np.inf, 0, 200, 400, 600, 800, np.inf],
-        labels=[0,1,2,3,4,5]
+        bins=[-np.inf, 00, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000, np.inf],
+        labels=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21]
     )
     # print(c.head(20).values)
     X_copy.drop(labels=cardinal, axis=1, inplace=True)
@@ -119,4 +158,4 @@ for cardinal in col_cardinal:
 #         break
 
 output = pd.DataFrame(X_copy)
-output.to_csv('stunting/ENSANUT_average_all.csv', index=False)
+output.to_csv('stunting/hasil_preprocessing/data_3_kategorisasi.csv', index=False)

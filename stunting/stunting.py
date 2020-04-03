@@ -1,10 +1,19 @@
-import pandas as pd
-df = pd.read_csv('stunting/ENSANUT_average_all.csv')
 #############################
 # K-means Clustering        #
 #############################
-from sklearn.cluster import KMeans
+import pandas as pd
 import numpy as np
+from sklearn.cluster import KMeans
+
+df = pd.read_csv('stunting/hasil_preprocessing/data_3_kategorisasi.csv')
+
+# df['h103'].replace(' ',0)
+# for v in df['h103']:
+#     print(v)
+
+# for col in df.columns: 
+    # print('%s => %s' % (col, df[col].dtypes))
+    # print(df[col].dtypes) 
 
 def clustering():
     X_np_array = np.asarray(df.astype(float))
