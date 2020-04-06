@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 from sklearn.cluster import KMeans
 
-df = pd.read_csv('stunting/hasil_preprocessing/data_3_kategorisasi.csv')
+df = pd.read_csv('stunting/hasil_preprocessing/data_M3_kategorisasi.csv')
 
 # df['h103'].replace(' ',0)
 # for v in df['h103']:
@@ -15,7 +15,7 @@ df = pd.read_csv('stunting/hasil_preprocessing/data_3_kategorisasi.csv')
     # print('%s => %s' % (col, df[col].dtypes))
     # print(df[col].dtypes) 
 
-def clustering():
+def clustering(hehe):
     X_np_array = np.asarray(df.astype(float))
     kmeans = KMeans(n_clusters=2)
     kmeans.fit(X_np_array)
@@ -30,8 +30,10 @@ def clustering():
             # print("row"+str(i)+" : "+str(prediction))
         else:
             stunting.append(i)
-
+    hehe = hehe + 1
+    print('percobaan ke-%d' % hehe)
     print('stunting: %d' % len(stunting))
     print('not stunting: %d' % len(notstunting))
 
-clustering()
+for i in range(3):
+    clustering(i)

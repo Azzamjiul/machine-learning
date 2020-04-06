@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from sklearn import preprocessing
 
 # Read the data
 # X_full = pd.read_csv('stunting/data.csv', encoding = 'ISO-8859-1', low_memory=False, na_values=[np.nan, 'NONE', 9999, 9999, ' '])
@@ -13,14 +14,6 @@ X = X_full
 # Preliminary investigation
 ##############
 X_copy = X.copy()
-columns = 0
-for c in X_copy.columns:
-    columns += 1
-
-# Get list of non-numerical variables
-s = (X_copy.dtypes == 'object')
-object_cols = list(s[s].index)
-# print(object_cols)
 
 #############################
 # Preprocessing             #
@@ -38,7 +31,7 @@ col_cardinal = [
 
 col_cardinal_small = ['h101', 'h103', 'h205', 'h505', 'h506']
 
-col_not_cardinal = list(set(X_copy.columns)-set(col_cardinal)-set(col_cardinal_small))
+col_ordinal = list(set(X_copy.columns)-set(col_cardinal)-set(col_cardinal_small))
 
 # 1. Mengganti spasi dengan null
 # X_copy = X_copy.replace(' ', None)
@@ -52,8 +45,8 @@ col_not_cardinal = list(set(X_copy.columns)-set(col_cardinal)-set(col_cardinal_s
 # print(X_copy[col_cardinal].head(20))
 
 # 3. pakai average
-
 for column in col_cardinal:
+# for column in X_copy.columns:
     try:
         X_copy_copy = X_copy[column]
         X_copy_copy = X_copy_copy.replace(' ', 0)
@@ -87,7 +80,7 @@ for column in col_cardinal_small:
 # print(X_copy['h807'].head(20))
 
 # ordinal with average
-# for column in col_not_cardinal:
+# for column in col_ordinal:
 #     try:
 #         X_copy_copy = X_copy[column]
 #         X_copy_copy = X_copy_copy.replace(' ', 0)
@@ -103,27 +96,30 @@ for column in col_cardinal_small:
 #         break
 
 # ordinal with median
-
-for column in col_not_cardinal:
+# ordinal with mode
+for column in col_ordinal:
     try:
         # print(X_copy[column].dtypes)
         X_copy_copy = X_copy[column]
         X_copy_copy
         X_copy_copy = X_copy_copy.replace(' ', 0)
         # X_copy_copy.dropna()
-        median = X_copy_copy.median()
+        # median = X_copy_copy.median()
+        mode = X_copy_copy.mode()
         # print(median)
         # median = X_copy[column].median()
         # print(column + ' => ' + median)
-        X_copy[column] = X_copy[column].replace(' ', median) 
+        # X_copy[column] = X_copy[column].replace(' ', median)
+        X_copy[column] = X_copy[column].replace(' ', mode) 
         X_copy[column] = X_copy[column].astype(int)
     except Exception as e:
         print('GAGAL')
         print(column)
-#         # print(X_copy[column].head(20))
+        print(X_copy[column].head(20))
         print(e)
         break
 
+##### Kategorisasi
 for cardinal in col_cardinal:
     # print(X_copy[cardinal].head(20))
     # print(X_copy[cardinal].describe())
@@ -140,6 +136,8 @@ for cardinal in col_cardinal:
     # print(X_copy[cardinal].head(20))
     # print(X_copy[cardinal].describe())
 
+
+##### Cek Tipe
 # for column  in X_copy.columns:
 #     try:
 #         print(X_copy[column].dtypes)
@@ -158,4 +156,4 @@ for cardinal in col_cardinal:
 #         break
 
 output = pd.DataFrame(X_copy)
-output.to_csv('stunting/hasil_preprocessing/data_3_kategorisasi.csv', index=False)
+output.to_csv('stunting/hasil_preprocessing/data_M3_kategorisasi.csv', index=False)
