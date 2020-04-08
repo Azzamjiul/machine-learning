@@ -1,7 +1,8 @@
-import pandas as pd
+import numpy as np
 
-data = pd.read_csv('stunting/data_Hogar_hogar.csv', encoding = 'ISO-8859-1', low_memory=False)
-missing_values = data.isin([' ']).sum()
-missing_values = data.isnull().sum()
-for value in missing_values:
-    print(value)
+a = np.array([[1, 2, 3, 4, 5]])
+print(a)
+a.transpose(1,0)
+a = a.T
+# print(a.T)
+print(a[0].item())

@@ -1,10 +1,11 @@
 import pandas as pd
 import numpy as np
+import statistics 
 from sklearn import preprocessing
 
 # Read the data
-# X_full = pd.read_csv('stunting/data.csv', encoding = 'ISO-8859-1', low_memory=False, na_values=[np.nan, 'NONE', 9999, 9999, ' '])
-X_full = pd.read_csv('stunting/data.csv', encoding = 'ISO-8859-1', low_memory=False)
+X_full = pd.read_csv('stunting/data.csv', encoding = 'ISO-8859-1', low_memory=False, na_values=[np.nan, 'NONE', 9999, 9999, ' '])
+# X_full = pd.read_csv('stunting/data.csv', encoding = 'ISO-8859-1', low_memory=False)
 
 # To keep things simple, we'll use only numerical predictors
 # X = X_full.select_dtypes(exclude=['object'])
@@ -21,7 +22,7 @@ X_copy = X.copy()
 
 # Drop columns with string values
 cols_with_string = ['h519esp', 'h521esp', 'h522esp', 'h70506sp', 'h812esp', 'code_upm']
-X_copy.drop(cols_with_string, axis=1, inplace=True)
+X_copy.drop(cols_with_string)
 
 col_cardinal = [
     'h70101','h70102', 'h70103', 'h70104', 'h70105', 'h70106', 'h70107', 'h70108', 'h70109', 'h70110', 'h70111', 'h70112', 'h70113', 'h70114', 'h70115', 'h70116', 'h70117', 'h70201', 'h70202', 'h70203', 'h70204', 'h70205', 'h70206', 'h70207', 'h70301', 'h70302', 'h70303', 'h70304', 'h70305', 'h70306', 'h70307', 'h70308', 'h70309', 'h70310', 'h70311', 'h70401', 'h70402', 'h70403', 'h70404', 'h70405', 'h70406', 'h70501a', 'h70502a', 'h70503a', 'h70504a', 'h70505a', 'h70506a', 'h706', 'h707'
@@ -49,10 +50,12 @@ for column in col_cardinal:
 # for column in X_copy.columns:
     try:
         X_copy_copy = X_copy[column]
-        X_copy_copy = X_copy_copy.replace(' ', 0)
+        # X_copy_copy = X_copy_copy.replace(' ', 0)
+        X_copy_copy = X_copy_copy.fillna(0)
         X_copy_copy = X_copy_copy.astype(int)
         average = round(X_copy_copy.mean(),0)
-        X_copy[column] = X_copy[column].replace(' ', average) 
+        # X_copy[column] = X_copy[column].replace(' ', average) 
+        X_copy[column] = X_copy[column].fillna(average)
         X_copy[column] = X_copy[column].astype(int)
     except Exception as e:
         print(column)
@@ -63,10 +66,12 @@ for column in col_cardinal:
 for column in col_cardinal_small:
     try:
         X_copy_copy = X_copy[column]
-        X_copy_copy = X_copy_copy.replace(' ', 0)
+        # X_copy_copy = X_copy_copy.replace(' ', 0)
+        X_copy_copy = X_copy_copy.fillna(0)
         X_copy_copy = X_copy_copy.astype(int)
         average = round(X_copy_copy.mean(),0)
-        X_copy[column] = X_copy[column].replace(' ', average) 
+        # X_copy[column] = X_copy[column].replace(' ', average) 
+        X_copy[column] = X_copy[column].fillna(average) 
         X_copy[column] = X_copy[column].astype(int)
     except Exception as e:
         print(column)
@@ -101,16 +106,23 @@ for column in col_ordinal:
     try:
         # print(X_copy[column].dtypes)
         X_copy_copy = X_copy[column]
-        X_copy_copy
-        X_copy_copy = X_copy_copy.replace(' ', 0)
+        # X_copy_copy = X_copy_copy.fillna(0)
         # X_copy_copy.dropna()
-        # median = X_copy_copy.median()
-        mode = X_copy_copy.mode()
-        # print(median)
+        median = X_copy_copy.median()
+         # print(median)
+        # print('median {} = {}'.format(column,median))
+
+        if column not in ['ï»¿folio']:
+            X_copy_copy = X_copy_copy.dropna()
+            mode = statistics.mode(X_copy_copy)
+            print('modus {} = {}'.format(column,mode))
+            # X_copy[column] = X_copy[column].fillna(mode)
+       
+        
         # median = X_copy[column].median()
         # print(column + ' => ' + median)
-        # X_copy[column] = X_copy[column].replace(' ', median)
-        X_copy[column] = X_copy[column].replace(' ', mode) 
+        X_copy[column] = X_copy[column].fillna(median)
+        # X_copy[column] = X_copy[column].replace(' ', mode)
         X_copy[column] = X_copy[column].astype(int)
     except Exception as e:
         print('GAGAL')
@@ -156,4 +168,4 @@ for cardinal in col_cardinal:
 #         break
 
 output = pd.DataFrame(X_copy)
-output.to_csv('stunting/hasil_preprocessing/data_M3_kategorisasi.csv', index=False)
+output.to_csv('stunting/hasil_preprocessing/data_M4_kategorisasi.csv', index=False)
