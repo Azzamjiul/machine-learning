@@ -3,7 +3,7 @@ import numpy as np
 import statistics
 from sklearn.preprocessing import MinMaxScaler
 
-df = pd.read_csv('stunting/data.csv', encoding = 'ISO-8859-1', low_memory=False, na_values=[np.nan, 'NONE', ' ', '99', '9999', '99999', '999999' ])
+df = pd.read_csv('stunting/Hogar_hogar.csv', encoding = 'ISO-8859-1', low_memory=False, na_values=[np.nan, 'NONE', ' ', '99', '9999', '99999', '999999' ])
 cols_with_string = ['ï»¿folio', 'deciles', 'quintiles', 'h519esp', 'h521esp', 'h522esp', 'h70506sp', 'h812esp', 'code_upm', 'est_dis', 'est_urb','est_marg','pondeh','est_var']
 df = df.drop(cols_with_string, axis=1)
 
